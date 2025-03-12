@@ -1,4 +1,4 @@
-#import boto3
+import boto3
 import json
 import random
 import time
@@ -13,9 +13,9 @@ TIME_INTERVAL = 60  # Intervalo máximo entre mediciones (segundos)
 FILE_INTERVAL = 2  # Intervalo entre archivos JSON (segundos) - reducido para pruebas locales
 
 # Configuración de AWS S3 (solo se usará si decides subir a S3)
-BUCKET_NAME = "sensor-data-bucket-lab-2024"  # Reemplazar con tu nombre de bucket
+BUCKET_NAME = "awssensorsbucket"  # Reemplazar con tu nombre de bucket
 REGION = "us-east-1"  # Reemplazar con tu región
-UPLOAD_TO_S3 = False  # Cambiar a True cuando quieras subir a S3
+UPLOAD_TO_S3 = True  # Cambiar a True cuando quieras subir a S3
 
 # Directorio para guardar los archivos JSON
 OUTPUT_DIR = "sensor_data"
