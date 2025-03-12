@@ -8,10 +8,11 @@ BUCKET_NAME = "awssensorsbucket"
 REGION = "us-east-1"
 
 # Configuración de PostgreSQL
-DB_HOST = "34.207.143.199"
-DB_NAME = "postgres"
+DB_HOST = "localhost"
+DB_NAME = "postgre"
 DB_USER = "postgres"
 DB_PASSWORD = "YourNewPassword"
+SCHEMA = "sensors"
 
 # Conectar a PostgreSQL
 def connect_db():
@@ -51,22 +52,23 @@ def load_data_from_s3():
             file_content = file_obj['Body'].read()
             data = json.loads(file_content)
             
-            for record in data:
-                cursor.execute(
-                    """
-                    INSERT INTO sensor_data (sensor_id, timestamp, temperature, humidity, latitude, longitude, battery_level)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    """,
-                    (
-                        record["sensor_id"],
-                        record["timestamp"],
-                        record["temperature"],
-                        record["humidity"],
-                        record["location"]["latitude"],
-                        record["location"]["longitude"],
-                        record["battery_level"]
+            if "measurements" in data:
+                for record in data["measurements"]:
+                    cursor.execute(
+                        f"""
+                        INSERT INTO {SCHEMA}.sensor_data (sensor_id, timestamp, temperature, humidity, latitude, longitude, battery_level)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        """,
+                        (
+                            record["sensor_id"],
+                            record["timestamp"],
+                            record["temperature"],
+                            record["humidity"],
+                            record["location"]["latitude"],
+                            record["location"]["longitude"],
+                            record["battery_level"]
+                        )
                     )
-                )
         
         conn.commit()
         print("Datos cargados exitosamente en la base de datos.")

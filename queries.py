@@ -1,10 +1,11 @@
 import psycopg2
 
 # Configuración de PostgreSQL
-DB_HOST = "localhost"
-DB_NAME = "sensores"
+DB_HOST = "34.207.143.199"
+DB_NAME = "postgres"
 DB_USER = "postgres"
-DB_PASSWORD = "tu_password"
+DB_PASSWORD = "YourNewPassword"
+SCHEMA = "sensors"
 
 # Conectar a PostgreSQL
 def connect_db():
@@ -27,9 +28,9 @@ def get_avg_temperature():
         return
     
     cursor = conn.cursor()
-    query = """
+    query = f"""
         SELECT sensor_id, AVG(temperature) AS avg_temperature
-        FROM sensor_data
+        FROM {SCHEMA}.sensor_data
         GROUP BY sensor_id;
     """
     
@@ -49,9 +50,9 @@ def get_measurement_count():
         return
     
     cursor = conn.cursor()
-    query = """
+    query = f"""
         SELECT sensor_id, COUNT(*) AS total_measurements
-        FROM sensor_data
+        FROM {SCHEMA}.sensor_data
         GROUP BY sensor_id;
     """
     
