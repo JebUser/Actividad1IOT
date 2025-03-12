@@ -127,8 +127,20 @@ class S3ToPostgresLoader:
             logger.info(f"Descargando archivo: {file_name}")
             file_obj = self.s3_client.get_object(Bucket=BUCKET_NAME, Key=file_name)
             file_content = file_obj['Body'].read()
-            data = json.loads(file_content)
-            logger.info(f"Archivo {file_name} parseado con {len(data)} registros")
+            data_dict = json.loads(file_content)
+            
+            # Verificar si los datos están dentro de una clave "measurements"
+            if "measurements" in data_dict and isinstance(data_dict["measurements"], list):
+                data = data_dict["measurements"]
+                logger.info(f"Archivo {file_name} parseado con {len(data)} registros en formato 'measurements'")
+            elif isinstance(data_dict, list):
+                # Si los datos ya son una lista, usarlos directamente
+                data = data_dict
+                logger.info(f"Archivo {file_name} parseado con {len(data)} registros en formato lista")
+            else:
+                logger.error(f"Formato de archivo {file_name} no reconocido: {data_dict.keys() if isinstance(data_dict, dict) else type(data_dict)}")
+                data = []
+            
             return data
         except Exception as e:
             logger.error(f"Error procesando archivo {file_name}: {e}")
